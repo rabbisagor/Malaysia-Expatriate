@@ -1,33 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
 import { NewsPage } from './pages/NewsPage';
 import { NewsArticlePage } from './pages/NewsArticlePage';
 import { AdminPage } from './pages/AdminPage';
-import { AppInstallModal } from './components/AppInstallModal';
-import { AboutModal } from './components/AboutModal';
 import { InAppBrowserModal } from './components/InAppBrowserModal';
 import { BloggerPost, Language } from './types/blogger';
 import { BloggerService } from './lib/bloggerService';
 
 export default function App() {
-  // Language state (persisted)
-  const [lang, setLang] = useState<Language>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('probashi_lang');
-      if (saved === 'en' || saved === 'bn') return saved;
-    }
-    return 'bn';
-  });
-
-  const handleLanguageChange = (newLang: Language) => {
-    setLang(newLang);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('probashi_lang', newLang);
-      document.documentElement.lang = newLang;
-    }
-  };
+  const [lang] = useState<Language>('bn');
 
   // Routing state
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -45,10 +26,6 @@ export default function App() {
     return null;
   });
 
-  // Modal states
-  const [isInstallOpen, setIsInstallOpen] = useState(false);
-  const [isAboutOpen, setIsAboutOpen] = useState(false);
-
   // In-App Browser state
   const [inAppBrowser, setInAppBrowser] = useState<{
     isOpen: boolean;
@@ -64,7 +41,7 @@ export default function App() {
     setInAppBrowser({
       isOpen: true,
       url,
-      title: title || (lang === 'bn' ? 'প্রবাসী সেবা পোর্টাল' : 'Probashi Seba Portal'),
+      title: title || 'ভিসা চেক পোর্টাল',
     });
   };
 
@@ -137,25 +114,13 @@ export default function App() {
     navigate(`/news/${encodeURIComponent(postId)}`);
   };
 
-  // Has active emergency post
-  const hasEmergency = posts.some((p) => p.isEmergency);
-
-  // Check current route category query if on /news?category=...
-  const categoryParam = React.useMemo(() => {
-    if (currentPath.includes('category=')) {
-      const params = new URLSearchParams(currentPath.split('?')[1]);
-      return params.get('category') || undefined;
-    }
-    return undefined;
-  }, [currentPath]);
-
   // Selected post object
   const activePost = React.useMemo(() => {
     if (!selectedPostId) return null;
     return posts.find((p) => p.id === selectedPostId) || null;
   }, [selectedPostId, posts]);
 
-  // Determine active page component
+  // Determine active view
   let pageContent: React.ReactNode;
 
   if (currentPath.startsWith('/admin')) {
@@ -170,8 +135,8 @@ export default function App() {
       <NewsArticlePage
         post={activePost}
         lang={lang}
-        onBack={() => navigate('/news')}
-        onSelectCategory={(cat) => navigate(`/news?category=${cat}`)}
+        onBack={() => navigate('/')}
+        onSelectCategory={() => navigate('/news')}
         onOpenLink={openInAppBrowser}
       />
     );
@@ -184,7 +149,7 @@ export default function App() {
         cacheTime={cacheTime}
         error={error}
         lang={lang}
-        initialCategory={categoryParam || 'all'}
+        initialCategory="visa"
         onRefresh={() => loadPosts(true)}
         onNavigate={navigate}
         onSelectPost={handleSelectPost}
@@ -192,57 +157,23 @@ export default function App() {
       />
     );
   } else {
-    // Default: Home Page (Only Category Grid with Icons & Flag Glassmorphism)
+    // Default: Pure Single Category (ভিসা চেক) - No Header, No Footer, No Extra Clutter
     pageContent = (
       <HomePage
         posts={posts}
         lang={lang}
-        onSelectCategory={(categoryId) => navigate(`/news?category=${categoryId}`)}
+        onSelectCategory={() => navigate('/news')}
         onOpenPortal={openInAppBrowser}
       />
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-emerald-500 selection:text-white">
-      {/* Global Header */}
-      <Header
-        lang={lang}
-        onLanguageChange={handleLanguageChange}
-        currentPath={currentPath}
-        onNavigate={navigate}
-        onOpenInstall={() => setIsInstallOpen(true)}
-        onOpenAbout={() => setIsAboutOpen(true)}
-        hasEmergencyNotice={hasEmergency}
-      />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center">
+      {/* Main View Area - No Header, No Footer */}
+      <main className="w-full flex-1 flex flex-col justify-center">{pageContent}</main>
 
-      {/* Main Page Area */}
-      <main className="flex-1">{pageContent}</main>
-
-      {/* Global Footer */}
-      <Footer
-        lang={lang}
-        onNavigate={navigate}
-        onOpenInstall={() => setIsInstallOpen(true)}
-        onOpenAbout={() => setIsAboutOpen(true)}
-      />
-
-      {/* App Install Modal */}
-      <AppInstallModal
-        isOpen={isInstallOpen}
-        onClose={() => setIsInstallOpen(false)}
-        lang={lang}
-      />
-
-      {/* About & Mission Modal */}
-      <AboutModal
-        isOpen={isAboutOpen}
-        onClose={() => setIsAboutOpen(false)}
-        onOpenInstall={() => setIsInstallOpen(true)}
-        lang={lang}
-      />
-
-      {/* Integrated In-App Browser Modal */}
+      {/* In-App Browser for Visa Check & Portals */}
       <InAppBrowserModal
         isOpen={inAppBrowser.isOpen}
         url={inAppBrowser.url}

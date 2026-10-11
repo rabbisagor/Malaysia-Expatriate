@@ -1,14 +1,7 @@
-import React, { useState } from 'react';
-import {
-  Search,
-  ExternalLink,
-  ChevronRight,
-  ShieldAlert,
-  ArrowRight,
-  Sparkles,
-} from 'lucide-react';
+import React from 'react';
+import { ExternalLink, Newspaper, ShieldCheck } from 'lucide-react';
 import { BloggerPost, Language } from '../types/blogger';
-import { BLOGGER_CATEGORIES, mapLabelToCategory, UI_STRINGS } from '../data/blogger-config';
+import { BLOGGER_CATEGORIES } from '../data/blogger-config';
 import { CategoryIcon } from '../components/CategoryIcon';
 
 interface HomePageProps {
@@ -24,187 +17,96 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectCategory,
   onOpenPortal,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const t = UI_STRINGS[lang];
-
-  // Calculate post counts per category
-  const categoryPostCounts = React.useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const cat of BLOGGER_CATEGORIES) {
-      counts[cat.id] = 0;
-    }
-
-    for (const post of posts) {
-      if (post.isEmergency) {
-        counts['emergency'] = (counts['emergency'] || 0) + 1;
-      }
-      for (const catName of post.categories) {
-        const meta = mapLabelToCategory(catName);
-        if (meta) {
-          counts[meta.id] = (counts[meta.id] || 0) + 1;
-        }
-      }
-    }
-    return counts;
-  }, [posts]);
-
-  // Check if there is an active emergency post
-  const emergencyCount = categoryPostCounts['emergency'] || 0;
-
-  // Filter categories by search query if user types in search
-  const filteredCategories = React.useMemo(() => {
-    if (!searchQuery.trim()) return BLOGGER_CATEGORIES;
-    const q = searchQuery.toLowerCase().trim();
-    return BLOGGER_CATEGORIES.filter(
-      (cat) =>
-        cat.bn.toLowerCase().includes(q) ||
-        cat.en.toLowerCase().includes(q) ||
-        cat.subtitleBn.toLowerCase().includes(q) ||
-        cat.subtitleEn.toLowerCase().includes(q)
-    );
-  }, [searchQuery]);
+  const visaCategory = BLOGGER_CATEGORIES[0];
+  const postCount = posts.length;
 
   return (
-    <div className="relative min-h-[calc(100vh-80px)] overflow-hidden py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
-      {/* Dynamic Glassmorphism Ambient Orbs (Malaysia & Bangladesh Flag Colors) */}
-      <div className="absolute top-10 left-10 w-96 h-96 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none -z-10 animate-pulse" />
-      <div className="absolute top-1/3 right-10 w-96 h-96 rounded-full bg-blue-600/15 blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-20 left-1/4 w-80 h-80 rounded-full bg-rose-600/15 blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-2/3 right-1/4 w-72 h-72 rounded-full bg-amber-400/15 blur-3xl pointer-events-none -z-10" />
+    <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 relative overflow-hidden bg-slate-950">
+      {/* Floating Flag-Harmonized Ambient Orbs (Malaysia Royal Blue, Red & Bangladesh Green) */}
+      <div className="absolute top-1/4 left-1/4 w-80 sm:w-96 h-80 sm:h-96 rounded-full bg-blue-600/20 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 sm:w-96 h-80 sm:h-96 rounded-full bg-emerald-600/20 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-rose-600/15 blur-3xl pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        {/* Sleek App Banner with Glassmorphism Flag Accent */}
-        <div className="relative rounded-3xl p-6 sm:p-8 backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 border border-white/60 shadow-xl shadow-slate-900/5">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-5">
-            {/* Title & Flag Badges */}
-            <div className="text-center md:text-left space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full backdrop-blur-md bg-white/70 border border-white/80 text-xs font-bold shadow-xs">
-                <span className="flex items-center gap-1 text-slate-800">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 inline-block"></span>
-                  বাংলাদেশ 🇧🇩
-                </span>
-                <span className="text-slate-400">•</span>
-                <span className="flex items-center gap-1 text-slate-800">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-700 inline-block"></span>
-                  মালয়েশিয়া 🇲🇾
-                </span>
+      {/* Single Category Card: ভিসা চেক (Visa Check) */}
+      <div className="w-full max-w-md sm:max-w-lg z-10">
+        <div
+          onClick={() => onOpenPortal(visaCategory.portalUrl || 'https://eservices.imi.gov.my', visaCategory.bn)}
+          className="group relative rounded-3xl overflow-hidden min-h-[380px] sm:min-h-[440px] flex flex-col justify-between p-6 sm:p-8 border border-white/20 hover:border-blue-400/60 transition-all duration-500 cursor-pointer shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 select-none"
+        >
+          {/* Thematic Background Image */}
+          <img
+            src={visaCategory.imageUrl}
+            alt={visaCategory.bn}
+            loading="eager"
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = 'none';
+            }}
+          />
+
+          {/* Glassmorphic Flag Gradient Scrim */}
+          <div
+            className={`absolute inset-0 bg-linear-to-t ${visaCategory.glassGradient} opacity-95 group-hover:opacity-90 transition-opacity`}
+          />
+
+          {/* Top Row: Icon Badge & Post Indicator */}
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center backdrop-blur-md bg-blue-600/30 text-blue-200 border border-blue-400/40 shadow-xl group-hover:scale-110 transition-transform">
+              <CategoryIcon name={visaCategory.iconName} className="w-7 h-7 sm:w-8 sm:h-8 text-blue-300" />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-md bg-black/50 text-blue-200 border border-blue-400/30 shadow-xs">
+                {lang === 'bn' ? `${postCount} টি নোটিশ` : `${postCount} notices`}
+              </span>
+            </div>
+          </div>
+
+          {/* Center / Bottom: Title, Description & Action Buttons */}
+          <div className="relative z-10 space-y-4 pt-8">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full backdrop-blur-md bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-400/30">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>{lang === 'bn' ? 'অফিসিয়াল ইমিগ্রেশন পোর্টাল' : 'Official Immigration Portal'}</span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                {lang === 'bn' ? 'প্রবাসী সেবা ক্যাটাগরি' : 'Probashi Seba Categories'}
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight group-hover:text-blue-300 transition-colors">
+                {lang === 'bn' ? visaCategory.bn : visaCategory.en}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-600 max-w-xl">
-                {lang === 'bn'
-                  ? 'আপনার প্রয়োজনীয় ক্যাটাগরিতে ট্যাপ করে সরাসরি ব্লগার নোটিশ ও সেবা দেখুন।'
-                  : 'Tap any category below to browse Blogger notices and official portals inside the app.'}
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                {lang === 'bn' ? visaCategory.subtitleBn : visaCategory.subtitleEn}
               </p>
             </div>
 
-            {/* Quick Category Search Input */}
-            <div className="w-full md:w-80">
-              <div className="relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={lang === 'bn' ? 'ক্যাটাগরি খুঁজুন...' : 'Search categories...'}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl backdrop-blur-md bg-white/80 border border-white/90 text-sm text-slate-900 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50 shadow-xs"
-                />
-              </div>
+            {/* Direct In-App Actions */}
+            <div className="pt-3 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenPortal(visaCategory.portalUrl || 'https://eservices.imi.gov.my', visaCategory.bn);
+                }}
+                className="w-full sm:flex-1 py-3.5 px-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+              >
+                <span>{lang === 'bn' ? 'সরাসরি ভিসা চেক করুন' : 'Check Visa Online'}</span>
+                <ExternalLink className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectCategory(visaCategory.id);
+                }}
+                className="w-full sm:w-auto py-3.5 px-4 rounded-2xl backdrop-blur-md bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 border border-white/20 transition-all cursor-pointer"
+              >
+                <Newspaper className="w-4 h-4 text-emerald-400" />
+                <span>{lang === 'bn' ? 'নোটিশ' : 'Notices'}</span>
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Categories Glassmorphism Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {filteredCategories.map((cat) => {
-            const count = categoryPostCounts[cat.id] || 0;
-            const isEmergency = cat.isEmergency;
-
-            return (
-              <div
-                key={cat.id}
-                onClick={() => onSelectCategory(cat.id)}
-                className={`group relative rounded-3xl p-5 sm:p-6 backdrop-blur-xl bg-white/60 dark:bg-slate-900/50 border transition-all duration-300 flex flex-col justify-between cursor-pointer hover:shadow-2xl hover:-translate-y-1.5 overflow-hidden ${
-                  isEmergency
-                    ? 'border-rose-400/60 hover:border-rose-500 bg-rose-50/40 ring-1 ring-rose-400/30'
-                    : 'border-white/70 hover:border-white hover:bg-white/80 shadow-md shadow-slate-900/5'
-                }`}
-              >
-                {/* Subtle Glass Gradient Glow */}
-                <div
-                  className={`absolute inset-0 bg-linear-to-br ${cat.glassGradient} opacity-20 group-hover:opacity-35 transition-opacity pointer-events-none`}
-                />
-
-                <div className="relative z-10 space-y-4">
-                  {/* Top Bar: Icon Badge & Post Count */}
-                  <div className="flex items-center justify-between">
-                    <div
-                      className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-md transition-transform duration-300 group-hover:scale-110 ${
-                        isEmergency
-                          ? 'bg-rose-600 text-white shadow-rose-600/30'
-                          : 'bg-linear-to-br from-slate-900 to-slate-800 text-white shadow-slate-900/20'
-                      }`}
-                    >
-                      <CategoryIcon name={cat.iconName} className="w-6 h-6" />
-                    </div>
-
-                    {/* Count Indicator */}
-                    <div className="flex items-center gap-1.5">
-                      {isEmergency && emergencyCount > 0 && (
-                        <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping" />
-                      )}
-                      <span
-                        className={`text-[11px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md border ${
-                          isEmergency
-                            ? 'bg-rose-100/80 text-rose-800 border-rose-300'
-                            : 'bg-white/80 text-slate-700 border-white/80'
-                        }`}
-                      >
-                        {lang === 'bn' ? `${count} টি নোটিশ` : `${count} posts`}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Title & Subtitle */}
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
-                      {lang === 'bn' ? cat.bn : cat.en}
-                    </h3>
-                    <p className="mt-1 text-xs text-slate-600 leading-relaxed line-clamp-2">
-                      {lang === 'bn' ? cat.subtitleBn : cat.subtitleEn}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Bottom Actions: View Blogger Posts & In-App Portal if available */}
-                <div className="relative z-10 mt-5 pt-3.5 border-t border-slate-200/60 flex items-center justify-between text-xs font-semibold">
-                  {/* Primary Action: Open Category Posts */}
-                  <span className="inline-flex items-center gap-1 text-emerald-800 group-hover:text-emerald-900">
-                    <span>{lang === 'bn' ? 'নোটিশ দেখুন' : 'View Notices'}</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-
-                  {/* Secondary Action: In-App Portal Link if available */}
-                  {cat.portalUrl && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenPortal(cat.portalUrl!, lang === 'bn' ? cat.bn : cat.en);
-                      }}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer text-[11px]"
-                      title={lang === 'bn' ? 'অ্যাপে সরাসরি পোর্টাল খুলুন' : 'Open in-app portal'}
-                    >
-                      <span>{lang === 'bn' ? 'পোর্টাল' : 'Portal'}</span>
-                      <ExternalLink className="w-3 h-3 text-slate-500" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
         </div>
       </div>
     </div>

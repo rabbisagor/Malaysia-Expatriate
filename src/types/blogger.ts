@@ -24,6 +24,7 @@ export interface CategoryInfo {
   iconName: string;
   subtitleBn: string;
   subtitleEn: string;
+  imageUrl: string; // Thematic background image for category card
   isEmergency?: boolean;
   color: string;
   glassGradient: string; // Tailwind glass gradient matching BD & MY flags
