@@ -28,7 +28,7 @@ export default function App() {
   const handleOpenVisaCheck = () => {
     setIsBrowserOpen(true);
     if (typeof window !== 'undefined') {
-      window.history.pushState({}, '', '/check-status');
+      window.history.pushState({}, '', '/https://imigresen-online.imi.gov.my/eservices/myPermit?semakStatusPermit);
     }
   };
 
