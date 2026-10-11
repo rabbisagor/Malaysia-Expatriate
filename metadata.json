@@ -1,0 +1,6 @@
+{
+  "name": "Probashi Seba Malaysia",
+  "description": "মালয়েশিয়ায় প্রবাসী বাংলাদেশীদের জরুরি নোটিশ, ভিসা, পাসপোর্ট ও ব্লগার নিউজ পোর্টাল",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

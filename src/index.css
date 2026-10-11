@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Hind Siliguri', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+/* Custom styling for sanitized Blogger article body */
+.blogger-article-content {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: #1e293b;
+}
+
+.blogger-article-content p {
+  margin-bottom: 1.25rem;
+}
+
+.blogger-article-content h1,
+.blogger-article-content h2,
+.blogger-article-content h3,
+.blogger-article-content h4 {
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 1.75rem;
+  margin-bottom: 0.875rem;
+  line-height: 1.35;
+}
+
+.blogger-article-content h1 { font-size: 1.625rem; }
+.blogger-article-content h2 { font-size: 1.375rem; }
+.blogger-article-content h3 { font-size: 1.2rem; }
+
+.blogger-article-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1.5rem auto;
+  display: block;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+}
+
+.blogger-article-content a {
+  color: #0284c7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  word-break: break-all;
+}
+
+.blogger-article-content a:hover {
+  color: #0369a1;
+}
+
+.blogger-article-content ul,
+.blogger-article-content ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.blogger-article-content ul {
+  list-style-type: disc;
+}
+
+.blogger-article-content ol {
+  list-style-type: decimal;
+}
+
+.blogger-article-content li {
+  margin-bottom: 0.5rem;
+}
+
+.blogger-article-content blockquote {
+  border-left: 4px solid #0284c7;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #475569;
+  background-color: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  margin: 1.25rem 0;
+}
+
+.blogger-article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  display: block;
+}
+
+.blogger-article-content th,
+.blogger-article-content td {
+  border: 1px solid #e2e8f0;
+  padding: 0.625rem 0.875rem;
+  text-align: left;
+}
+
+.blogger-article-content th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+}
